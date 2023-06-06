@@ -1,0 +1,10 @@
+__pycache__/
+/venv
+
+videos/
+
+.idea/
+
+.env
+send_order_*.json
+orders.md
