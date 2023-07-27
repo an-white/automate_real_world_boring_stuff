@@ -54,7 +54,7 @@ if __name__ == '__main__':
     companies = int(os.environ['COMPANIES'])
 
     for i in range(companies):
-        company = os.environ[f'COMPANY_{i}']
-        sheet_id = os.environ[f'SHEET_ID_COMPANY_{i}']
+        company_i = os.environ[f'COMPANY_{i}']
+        sheet_id_i = os.environ[f'SHEET_ID_COMPANY_{i}']
 
-        build_json(company, sheet_id)
+        build_json(company_i, sheet_id_i)
