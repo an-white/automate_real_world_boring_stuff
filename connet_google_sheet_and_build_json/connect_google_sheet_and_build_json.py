@@ -15,9 +15,8 @@ def get_sheet(sheet_id):
     return pd.read_csv(url)
 
 
-def build_json():
+def build_json(company, sheet_id):
     load_dotenv()
-    sheet_id = os.environ['SHEET_ID']
     df = get_sheet(sheet_id)
 
     orders_df = pd.DataFrame({
@@ -30,21 +29,32 @@ def build_json():
 
     new_json = {"Records": []}
 
-    for i in range(len(orders_df)):
-        record = {
-            "body": """{ \"Message\" : \"{\\\"CASA\\\":0,\\\"schema\\\":\\\"dbafv\\\",\\\"data\\\":{""" +
-                    """\\\"NUMORDEN\\\":\\\"""" + str(orders_df.NUMORDEN[i]) +
-                    """\\\",\\\"IDCLIENTE\\\":\\\"""" + str(orders_df.CLIENTE[i]) +
-                    """\\\",\\\"FECHAEMISION\\\":\\\"""" + orders_df.FECHAEMISION[i] + """\\\"}}\"}"""
-        }
-        new_json["Records"].append(record)
+    total_items = len(orders_df)
 
-    new_file = open(f'send_order_{int(time.time())}.json', 'w')
+    if total_items != 0:
+        for i in range(total_items):
+            record = {
+                "body": """{ \"Message\" : \"{\\\"CASA\\\":0,\\\"schema\\\":\\\"""" + company +
+                        """\\\",\\\"data\\\":{""" +
+                        """\\\"NUMORDEN\\\":\\\"""" + str(orders_df.NUMORDEN[i]) +
+                        """\\\",\\\"IDCLIENTE\\\":\\\"""" + str(orders_df.CLIENTE[i]) +
+                        """\\\",\\\"FECHAEMISION\\\":\\\"""" + orders_df.FECHAEMISION[i] + """\\\"}}\"}"""
+            }
+            new_json["Records"].append(record)
 
-    new_file.write(json.dumps(new_json))
+        new_file = open(f'send_orders_{company}_{int(time.time())}.json', 'w')
 
-    print(f'total orders: {len(orders_df)}')
+        new_file.write(json.dumps(new_json))
+
+    print(f'total orders in {company}: {total_items}')
 
 
 if __name__ == '__main__':
-    build_json()
+    load_dotenv()
+    companies = int(os.environ['COMPANIES'])
+
+    for i in range(companies):
+        company = os.environ[f'COMPANY_{i}']
+        sheet_id = os.environ[f'SHEET_ID_COMPANY_{i}']
+
+        build_json(company, sheet_id)
