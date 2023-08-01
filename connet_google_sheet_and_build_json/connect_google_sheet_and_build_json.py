@@ -15,7 +15,7 @@ def get_sheet(sheet_id):
     return pd.read_csv(url)
 
 
-def build_json(company, sheet_id):
+def build_json(company, sheet_id, id):
     load_dotenv()
     df = get_sheet(sheet_id)
 
@@ -34,7 +34,8 @@ def build_json(company, sheet_id):
     if total_items != 0:
         for i in range(total_items):
             record = {
-                "body": """{ \"Message\" : \"{\\\"CASA\\\":0,\\\"schema\\\":\\\"""" + company +
+                "body": """{ \"Message\" : \"{\\\"CASA\\\":""" + id +
+                        """,\\\"schema\\\":\\\"""" + company +
                         """\\\",\\\"data\\\":{""" +
                         """\\\"NUMORDEN\\\":\\\"""" + str(orders_df.NUMORDEN[i]) +
                         """\\\",\\\"IDCLIENTE\\\":\\\"""" + str(orders_df.CLIENTE[i]) +
@@ -53,8 +54,8 @@ if __name__ == '__main__':
     load_dotenv()
     companies = int(os.environ['COMPANIES'])
 
-    for i in range(companies):
-        company_i = os.environ[f'COMPANY_{i}']
-        sheet_id_i = os.environ[f'SHEET_ID_COMPANY_{i}']
+    for company_id in range(companies):
+        company_i = os.environ[f'COMPANY_{company_id}']
+        sheet_id_i = os.environ[f'SHEET_ID_COMPANY_{company_id}']
 
-        build_json(company_i, sheet_id_i)
+        build_json(company_i, sheet_id_i, company_id)
