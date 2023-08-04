@@ -6,5 +6,5 @@ videos/
 .idea/
 
 connet_google_sheet_and_build_json/.env
-send_order_*.json
+send_orders_*.json
 orders.md
